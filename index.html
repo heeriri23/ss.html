@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026.06 월간 업무 보고서 | 마케팅팀 이상희</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1f2430; --sub:#5b6472;
+    --line:#e6e8ec; --accent:#2f6df0; --accent2:#15b8a6;
+    --warn:#e0524d; --good:#27a567; --chip:#eef2fb;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.65; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:980px; margin:0 auto; padding:40px 20px 80px;}
+
+  /* 헤더 */
+  header.report{background:linear-gradient(135deg,#1f2430,#2f3a52);
+    color:#fff; border-radius:18px; padding:38px 36px; margin-bottom:28px;}
+  header.report .tag{font-size:13px; letter-spacing:2px; opacity:.7;}
+  header.report h1{font-size:30px; font-weight:800; margin:8px 0 4px;}
+  header.report .by{font-size:14px; opacity:.85;}
+
+  /* 목차 */
+  .toc{background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:22px 26px; margin-bottom:28px;}
+  .toc h3{font-size:15px; color:var(--sub); margin-bottom:12px;}
+  .toc ol{list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:6px 24px;}
+  .toc li{font-size:14px; padding:4px 0; border-bottom:1px dashed var(--line);}
+  .toc a{color:var(--ink); text-decoration:none;}
+  .toc a:hover{color:var(--accent);}
+
+  /* 섹션 */
+  section{background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:26px 28px; margin-bottom:20px;}
+  section h2{font-size:19px; font-weight:800; margin-bottom:16px; padding-bottom:10px;
+    border-bottom:2px solid var(--ink); display:flex; align-items:center; gap:10px;}
+  section h2 .num{background:var(--ink); color:#fff; font-size:13px; font-weight:700;
+    width:26px; height:26px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center;}
+  h3.sub{font-size:15px; font-weight:700; margin:18px 0 10px; color:#2f3a52;}
+
+  ul.bul{list-style:none;}
+  ul.bul li{position:relative; padding:5px 0 5px 18px; font-size:14.5px; color:#2a3240;}
+  ul.bul li::before{content:""; position:absolute; left:2px; top:13px;
+    width:6px; height:6px; border-radius:50%; background:var(--accent);}
+  ul.bul li b{color:var(--ink);}
+
+  /* 표 */
+  table{width:100%; border-collapse:collapse; margin:12px 0; font-size:14px;}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left;}
+  th{background:#f7f9fc; font-weight:700; color:#33415c;}
+  td.r,th.r{text-align:right;}
+  .down{color:var(--warn); font-weight:700;}
+  .up{color:var(--good); font-weight:700;}
+
+  /* 강조 박스 */
+  .note{background:var(--chip); border-left:4px solid var(--accent);
+    padding:12px 16px; border-radius:8px; font-size:13.5px; color:#33415c; margin:12px 0;}
+  .note.warn{background:#fdecea; border-left-color:var(--warn); color:#8a2a26;}
+
+  /* 칩(상태) */
+  .chip{display:inline-block; font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px;}
+  .chip.done{background:#e3f5ec; color:#1c7a4d;}
+  .chip.ing{background:#fff1da; color:#9a6512;}
+  .chip.mon{background:#e8eefb; color:#345; }
+
+  /* 진행률 바 */
+  .pbar{background:#eef1f5; border-radius:6px; height:8px; width:90px; overflow:hidden; display:inline-block; vertical-align:middle;}
+  .pbar > span{display:block; height:100%; background:var(--accent);}
+
+  /* 차트 */
+  .chart-wrap{background:#fafbfc; border:1px solid var(--line); border-radius:12px;
+    padding:18px; margin:16px 0;}
+  .chart-wrap h4{font-size:14px; color:var(--sub); margin-bottom:6px;}
+  .chart-box{position:relative; height:300px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+
+  /* 요약 KPI 카드 */
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:8px;}
+  .kpi{background:#fafbfc; border:1px solid var(--line); border-radius:12px; padding:16px; text-align:center;}
+  .kpi .v{font-size:22px; font-weight:800;}
+  .kpi .l{font-size:12.5px; color:var(--sub); margin-top:4px;}
+  .kpi .d{font-size:12px; margin-top:3px;}
+
+  .plan{background:linear-gradient(135deg,#0f3d63,#15706b); color:#fff; border:none;}
+  .plan h2{color:#fff; border-bottom-color:rgba(255,255,255,.35);}
+  .plan h2 .num{background:#fff; color:#0f3d63;}
+  .plan ul.bul li{color:#eaf4f3;} .plan ul.bul li b{color:#fff;}
+  .plan ul.bul li::before{background:#7fe3d6;}
+  .plan th{background:rgba(255,255,255,.12); color:#fff;} 
+  .plan td{border-color:rgba(255,255,255,.22); color:#eaf4f3;}
+
+  footer{text-align:center; font-size:12px; color:var(--sub); margin-top:30px;}
+
+  @media (max-width:720px){
+    .toc ol{grid-template-columns:1fr;}
+    .grid2{grid-template-columns:1fr;}
+    .kpis{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="report">
+    <div class="tag">2026.06 MONTHLY REPORT</div>
+    <h1>월간 업무 보고서</h1>
+    <div class="by">마케팅팀 · 이상희</div>
+  </header>
+
+  <!-- 목차 -->
+  <nav class="toc">
+    <h3>목차</h3>
+    <ol>
+      <li><a href="#s1">1. 월간 업무 개요</a></li>
+      <li><a href="#s2">2. 콘텐츠 성과 및 KPI 분석</a></li>
+      <li><a href="#s3">3. 브랜드 필름 및 브랜드 콘텐츠</a></li>
+      <li><a href="#s4">4. 커스텀 이벤트(꼴로르 메이커스 UL)</a></li>
+      <li><a href="#s5">5. 해외 계정 및 인플루언서 협업</a></li>
+      <li><a href="#s6">6. 대외 협업 및 프로젝트</a></li>
+      <li><a href="#s7">7. 홈페이지 콘텐츠 성과</a></li>
+      <li><a href="#s8">8. 매출 현황</a></li>
+      <li><a href="#s9">9. 개별 업무 현황</a></li>
+      <li><a href="#s10">10. AI 활용 업무 현황</a></li>
+      <li><a href="#s11">11. 이슈 및 특이사항</a></li>
+      <li><a href="#s12">12. 종합 평가</a></li>
+      <li><a href="#s13">13. 7월 주요 예정 업무</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 -->
+  <section id="s1">
+    <h2><span class="num">1</span>월간 업무 개요</h2>
+    <ul class="bul">
+      <li>5월 OOS 행사 종료 후, <b>브랜드 본질 콘텐츠(브랜드 필름) 구축</b> 및 하반기 핵심 프로젝트(커스텀 이벤트) 기반 마련에 집중한 달</li>
+      <li>콘텐츠 업로드 수 감소 — 신제품 부재, 야외 촬영 난항, 외주 연동 일정 조율 부담이 복합 작용</li>
+      <li>팔로워 순증 <b>+63</b>으로 전월 대비 둔화 — 인기 재입고 상품 입고 지연, 타프 콘텐츠 부재 등 신규 자극 요소 부족</li>
+      <li>6월 매출 <b>133,094,000원</b>, 전월 대비 <span class="down">-62.3%</span> — 시즌 주력 제품(에어라이트 400) 판매 종료 및 신제품 부재 영향</li>
+      <li>'수량'보다 '깊이' 중심 전환기로 활용, 중장기 자산 성격 성과 확보</li>
+    </ul>
+    <h3 class="sub">주요 성과 요약</h3>
+    <ul class="bul">
+      <li>브랜드 필름 제작·공개 완료 (한·영 자막 적용, 해외 유저 대응)</li>
+      <li>다운라이너 90 릴스 직접 제작·업로드 완료 (6월 자체 콘텐츠 조회수 1위, 7,509건)</li>
+      <li>다운라이너 프로 190 릴스 촬영 완료 및 외주 발주 (6/30 업로드 예정)</li>
+      <li>커스텀 이벤트(꼴로르 메이커스 UL 2026) 진행 최종 확정, 7월 진행 결정</li>
+      <li>꼴로르 메이커스 공장 방문 일정·내용 확정, 지원서 제작 완료</li>
+      <li>씨씨레터(사각 침낭 비교) 제작·업로드 완료 (링크 클릭률 4.61%, 3개월 연속 전환 자산 입증)</li>
+      <li>해외 인플루언서 협찬 대상 조율 (알제리·영국 확정 단계, 미국 제안 진행)</li>
+      <li>존뮤어트레일(JMT) 추가 촬영 확정 및 계약서 작성 준비</li>
+    </ul>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2><span class="num">2</span>콘텐츠 성과 및 KPI 분석</h2>
+
+    <h3 class="sub">2-1. 계정 전체 성과 요약 (6/1~6/24)</h3>
+    <div class="kpis">
+      <div class="kpi"><div class="v">18,003</div><div class="l">기준 팔로워 수</div></div>
+      <div class="kpi"><div class="v up">+186</div><div class="l">팔로우</div></div>
+      <div class="kpi"><div class="v down">-123</div><div class="l">팔로우 취소</div></div>
+      <div class="kpi"><div class="v">+63</div><div class="l">순증 (약 +0.4%)</div></div>
+    </div>
+    <ul class="bul">
+      <li>전월 대비 성장 폭 둔화, 유입·취소 모두 절대치 감소 → 계정 활동량 자체 축소</li>
+      <li>둔화 주원인 : 침낭 핵심 시즌 진입 대비 인기 재입고 상품 입고 지연, 계절·날씨 영향, 타프 콘텐츠 부재</li>
+      <li>7월 재입고 물량 및 이벤트 피드 전환으로 성장 흐름 회복 도모 예정</li>
+    </ul>
+
+    <h3 class="sub">2-2. 피드·릴스 콘텐츠별 성과</h3>
+    <table>
+      <thead><tr><th>콘텐츠</th><th class="r">조회수</th><th class="r">도달</th><th class="r">좋아요</th><th class="r">공유</th><th class="r">저장</th><th class="r">팔로우</th><th class="r">전환율</th></tr></thead>
+      <tbody>
+        <tr><td>브랜드 필름 릴스 (6/4)</td><td class="r">5,959</td><td class="r">3,795</td><td class="r">122</td><td class="r">4</td><td class="r">1</td><td class="r">+1</td><td class="r">0.02%</td></tr>
+        <tr><td>썸머라이트 500 레이크 틸 (6/11)</td><td class="r">6,812</td><td class="r">4,003</td><td class="r">89</td><td class="r">2</td><td class="r">2</td><td class="r">+1</td><td class="r">0.01%</td></tr>
+        <tr><td>다운라이너 90 릴스 (6/17)</td><td class="r">7,509</td><td class="r">3,982</td><td class="r">87</td><td class="r">2</td><td class="r">11</td><td class="r">+2</td><td class="r">0.03%</td></tr>
+      </tbody>
+    </table>
+    <div class="chart-wrap">
+      <h4>피드·릴스 콘텐츠별 조회수·도달·저장</h4>
+      <div class="chart-box"><canvas id="chartContent"></canvas></div>
+    </div>
+    <div class="note">※ 꼴로르 메이커스 UL 2026 이벤트 피드(6/29), 다운라이너 프로 190 릴스(6/30)는 업로드 예정 → 7월 보고서 반영</div>
+    <ul class="bul">
+      <li><b>다운라이너 90 릴스</b> : 6월 자체 콘텐츠 조회수 1위, 저장 11건 최상위 → 외주 없이 빠른 소화, 효율 최고</li>
+      <li><b>브랜드 필름 릴스</b> : 직접 전환보다 브랜드 톤앤매너 강화·중장기 관여도 기여, 좋아요 122건 양호</li>
+      <li><b>썸머라이트 500 레이크 틸</b> : 기존 이미지 재활용에도 조회·도달 우수 → 시즌 수요+제품 매칭 시 재활용 효율 유효</li>
+    </ul>
+
+    <h3 class="sub">2-3. 스토리 콘텐츠별 성과</h3>
+    <table>
+      <thead><tr><th>콘텐츠</th><th class="r">조회수</th><th class="r">반응</th><th class="r">프로필 활동</th><th class="r">링크 클릭</th><th class="r">클릭률</th></tr></thead>
+      <tbody>
+        <tr><td>위드 꼴로르 재안내 (6/15)</td><td class="r">1,636</td><td class="r">24</td><td class="r">30</td><td class="r">—</td><td class="r">—</td></tr>
+        <tr><td>씨씨레터 안내 (6/26)</td><td class="r">477</td><td class="r">7</td><td class="r">1</td><td class="r">22</td><td class="r">4.61%</td></tr>
+      </tbody>
+    </table>
+    <div class="chart-wrap">
+      <h4>씨씨레터 링크 클릭률 3개월 추이</h4>
+      <div class="chart-box"><canvas id="chartCC"></canvas></div>
+    </div>
+    <ul class="bul">
+      <li><b>씨씨레터 안내</b> : 조회수 낮게 집계(477)에도 클릭 22건·클릭률 4.61% → 조회 규모 무관 안정적 전환 자산, 3개월 연속 입증</li>
+      <li><b>위드 꼴로르 재안내</b> : 이달 스토리 최고 조회수(1,636), 브랜드 시리즈 일관 도달 역할 유지</li>
+    </ul>
+
+    <h3 class="sub">2-4. KPI 평가 기준 적용 결과</h3>
+    <table>
+      <thead><tr><th>전환율 구간</th><th>KPI 평가</th><th>성격</th></tr></thead>
+      <tbody>
+        <tr><td>0.1% 이하</td><td>브랜딩형</td><td>감성 중심 콘텐츠</td></tr>
+        <tr><td>0.1~0.2%</td><td>평균 이상</td><td>관심 유입 단계</td></tr>
+        <tr><td>0.2~0.3%</td><td>성장 기여</td><td>제품 설명형 전환 콘텐츠</td></tr>
+        <tr><td>0.3% 이상</td><td>대표 성장 자산</td><td>장기 전환 자산</td></tr>
+      </tbody>
+    </table>
+    <ul class="bul">
+      <li>6월 전반 0.01~0.03% 분포, 5월(0.01~0.16%) 대비 평균 전환율 추가 하락</li>
+      <li>하락 원인 : ① 업로드 수 감소 ② 행사·이벤트 콘텐츠 부재 ③ 기존 이미지·브랜드 자산형 중심 운영</li>
+      <li>긍정 신호 : 짧은 릴스 포맷의 저장·관여 효율 입증, 신규 유입은 릴스에서 가장 강하게 작동</li>
+      <li>0.2% 이상 진입 핵심 기회 : ① 7월 재입고 안내 콘텐츠 ② 꼴로르 메이커스 UL 이벤트 피드 ③ JMT 재제작 / 프로 190 릴스</li>
+    </ul>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2><span class="num">3</span>브랜드 필름 및 브랜드 콘텐츠 진행 현황</h2>
+    <ul class="bul">
+      <li>5월부터 규모 확대로 조정된 브랜드 필름 6/4 공개 완료</li>
+      <li>월간 회의 의견("해외 유저 대응 콘텐츠 다양화") 반영 → 한·영 자막 방향 전환, 자막·구성 전반 수정 후 최종본 완성</li>
+      <li>단순 브랜딩 넘어 브랜드 태도·메시지 전달, 커스텀 이벤트 사전 인식 기반 역할 수행</li>
+      <li>릴스 성과 양호(조회수 5,959, 좋아요 122), 음악·나레이션 소스 AI 제작 후 외주 전달로 효율 확보</li>
+    </ul>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2><span class="num">4</span>커스텀 이벤트(꼴로르 메이커스 UL) 기획 현황</h2>
+    <ul class="bul">
+      <li>2~3분기 진행 최종 확정, 7월 진행 결정</li>
+      <li>생산팀 회의 통해 전체 내용 확정, 기존 대비 일정 앞당겨 디자인 일정 확정</li>
+      <li>외주 디자이너 콘텐츠 이미지 작업 의뢰 완료, 시안 검수 진행 중</li>
+      <li>공장 방문 일정·내용 확정, 지원서 제작 완료</li>
+      <li>공장 방문 미팅 대비 상세 기획 준비 착수</li>
+      <li>이벤트 피드 6/29 업로드 예정 → 성과 7월 보고서 반영</li>
+    </ul>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2><span class="num">5</span>해외 계정 및 인플루언서 협업 현황</h2>
+    <div class="note">6월 해외 계정 운영 = ① 인플루언서 협찬 추진 + ② 기존 콘텐츠 리그램 운영</div>
+    <h3 class="sub">5-1. 해외 인플루언서 협찬 진행</h3>
+    <ul class="bul">
+      <li>이국적 이미지 자산 확보 목적, 알제리·영국 인플루언서 협찬 최종 조율 단계</li>
+      <li>미국 인플루언서 협찬 제안 병행 → 브랜드 소개서 필요, 현재 준비·제안 진행 중</li>
+      <li>협찬 신규 영역인 만큼 마케팅팀 회의 거쳐 진행 기준·접근 전략 정립 후 착수</li>
+      <li>협찬 확정 및 콘텐츠 성과는 다음 보고서 후속 반영 예정</li>
+    </ul>
+    <h3 class="sub">5-2. 기존 콘텐츠 리그램 운영</h3>
+    <ul class="bul">
+      <li>신규 제작 대신 기존 국내 콘텐츠 리그램 방식 운영 → 일본 계정 조회수 상대적 우수</li>
+      <li>운영 전·후 비교 인사이트 미확보로 정량 분석 보류, 다음 달부터 본격 분석 가능</li>
+    </ul>
+    <h3 class="sub">5-3. 해외몰 운영 이슈</h3>
+    <ul class="bul">
+      <li>홍콩 고객 DM 가격 문의 접수(얼티밋 라이트 380, 정상가 대비 200달러 이상 차이)</li>
+      <li>환율 연동 오류 확인 → 1차 안내 후 개선사항까지 2일간 상세 응대, 불만 없이 마무리, 오류 수정 완료</li>
+    </ul>
+    <div class="note warn">→ 재발 시 매출·신뢰도 손실 우려, 정기 점검 프로세스 정비 필요</div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2><span class="num">6</span>대외 협업 및 프로젝트 현황</h2>
+    <h3 class="sub">6-1. 존뮤어트레일(JMT) 협업</h3>
+    <ul class="bul">
+      <li>추가 촬영 진행 확정, 계약서 작성 준비 중</li>
+      <li>추가 요청사항 조율 → 대부분 수용 후 진행 결정</li>
+      <li>확보 신규 이미지 자산은 7월부터 콘텐츠 재제작 본격 반영 예정</li>
+    </ul>
+    <h3 class="sub">6-2. 협업처 현황 요약</h3>
+    <table>
+      <thead><tr><th>협업처</th><th>내용</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td>베이스드 인 네이처(고성)</td><td>5/23 전화 이벤트 진행 및 결과 정리</td><td><span class="chip done">완료</span></td></tr>
+        <tr><td>존뮤어트레일(JMT)</td><td>추가 촬영 확정, 계약서 준비·요청사항 조율</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>해외 인플루언서 협찬</td><td>알제리·영국 최종 조율, 미국 제안 진행</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>외주 디자이너</td><td>씨씨레터·커스텀 이벤트·프로 190 릴스 등 다수 연동</td><td><span class="chip ing">진행 중</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2><span class="num">7</span>홈페이지 콘텐츠 성과</h2>
+    <h3 class="sub">씨씨레터 저널 — 썸머라이트 500 vs 슬립스퀘어 ST 500 비교 (6/25 업로드)</h3>
+    <table>
+      <tbody>
+        <tr><th style="width:140px">주제</th><td>썸머라이트 500 vs 슬립스퀘어 ST 500, 뭐가 다를까요?</td></tr>
+        <tr><th>성격</th><td>제품 비교형 정보 콘텐츠(씨씨레터 연동)</td></tr>
+        <tr><th>목적</th><td>라인업 차이 설명 통한 선택 가이드 및 상세페이지 유입 유도</td></tr>
+        <tr><th>페이지뷰(PV)</th><td>약 187회</td></tr>
+        <tr><th>게시판 조회수</th><td>137회</td></tr>
+      </tbody>
+    </table>
+    <ul class="bul">
+      <li>업로드 직후 단계 → 게시판 내부 이동·직접 유입(링크 공유) 대부분, 네이버 검색 직접 유입 비중 낮음</li>
+      <li>본문 링크·연관 상품 통한 최다 이동 상품 : 썸머라이트 500 (빈티지 그린 → 베이지 그레이 → 그레이 순)</li>
+      <li>비교형 저널 콘텐츠가 상품 상세페이지 유입 안정적 유도 자산으로 3개월 연속 기능</li>
+      <li>7월에 1개월 후 추가 조회수 정리 예정</li>
+    </ul>
+  </section>
+
+  <!-- 8 -->
+  <section id="s8">
+    <h2><span class="num">8</span>매출 현황</h2>
+    <div class="note">5월 전체 대비 6월(6/1~6/26) 분석 결과</div>
+
+    <h3 class="sub">8-1. 주요 지표 비교</h3>
+    <table>
+      <thead><tr><th>지표</th><th class="r">5월 (전체)</th><th class="r">6월 (6/26 기준)</th><th class="r">증감</th></tr></thead>
+      <tbody>
+        <tr><td>총 매출액</td><td class="r">352,613,100원</td><td class="r">133,094,000원</td><td class="r down">-62.3%</td></tr>
+        <tr><td>구매 전환율</td><td class="r">2.2%</td><td class="r">1.6%</td><td class="r down">-0.6%p</td></tr>
+        <tr><td>객단가</td><td class="r">331,715원</td><td class="r">271,067원</td><td class="r down">-18.3%</td></tr>
+      </tbody>
+    </table>
+    <div class="grid2">
+      <div class="chart-wrap"><h4>총 매출액 비교 (백만 원)</h4><div class="chart-box"><canvas id="chartSales"></canvas></div></div>
+      <div class="chart-wrap"><h4>전환율·객단가 변화</h4><div class="chart-box"><canvas id="chartMetrics"></canvas></div></div>
+    </div>
+    <ul class="bul">
+      <li>5월 대비 전반적 매출 지표 하락 추세</li>
+      <li>객단가 약 6만 원 하락 → 매출 감소 주요 원인</li>
+      <li>6월은 26일까지 집계분으로, 월말 마감 시 수치 변동 가능</li>
+    </ul>
+
+    <h3 class="sub">8-2. 인기 제품 순위 변화</h3>
+    <ul class="bul">
+      <li>5월 주력 : '에어라이트 400' 시리즈 압도적 1위(약 7천만 원)로 매출 견인</li>
+      <li>6월 주력 : '얼티밋라이트 380' + '다운라이너' 제품군으로 주력 모델 교체</li>
+      <li>5월 1위 '에어라이트 400' 판매 감소 → 전체 매출 규모 축소</li>
+    </ul>
+
+    <h3 class="sub">8-3. 인스타그램(IG) 유입 성과 비교</h3>
+    <table>
+      <thead><tr><th>지표</th><th class="r">5월</th><th class="r">6월</th><th class="r">증감</th></tr></thead>
+      <tbody>
+        <tr><td>유입 매출</td><td class="r">1,495,000원</td><td class="r">1,208,000원</td><td class="r down">-19.2%</td></tr>
+        <tr><td>주문 건수</td><td class="r">4건</td><td class="r">3건</td><td class="r down">-1건</td></tr>
+        <tr><td>유입수</td><td class="r">1,133회</td><td class="r">807회</td><td class="r down">-28.8%</td></tr>
+      </tbody>
+    </table>
+    <div class="chart-wrap"><h4>IG 유입 성과 비교 (5월 vs 6월)</h4><div class="chart-box"><canvas id="chartIG"></canvas></div></div>
+    <ul class="bul">
+      <li>인스타그램 유입·매출 5월과 유사 수준 유지</li>
+      <li>전체 매출 하락폭(-62.3%) 대비 IG 매출 하락폭(-19.2%) 상대적으로 작음 → SNS 구매 영향력 견고 유지</li>
+    </ul>
+  </section>
+
+  <!-- 9 -->
+  <section id="s9">
+    <h2><span class="num">9</span>개별 업무 현황</h2>
+    <table>
+      <thead><tr><th>업무명</th><th>내용</th><th class="r" style="width:130px">진행률</th><th style="width:80px">상태</th></tr></thead>
+      <tbody>
+        <tr><td>브랜드 필름 제작·공개</td><td>한·영 자막 적용, 6/4 공개</td><td class="r"><span class="pbar"><span style="width:100%"></span></span> 100%</td><td><span class="chip done">완료</span></td></tr>
+        <tr><td>다운라이너 90 릴스</td><td>기획·촬영·편집 직접 진행, 6/17 업로드(조회수 1위)</td><td class="r"><span class="pbar"><span style="width:100%"></span></span> 100%</td><td><span class="chip done">완료</span></td></tr>
+        <tr><td>다운라이너 프로 190 릴스</td><td>촬영 완료 후 외주 발주, 6/30 업로드 예정</td><td class="r"><span class="pbar"><span style="width:90%"></span></span> 90%</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>씨씨레터 제작</td><td>사각 침낭 비교로 주제 변경, 홈페이지·스토리 업로드</td><td class="r"><span class="pbar"><span style="width:100%"></span></span> 100%</td><td><span class="chip done">완료</span></td></tr>
+        <tr><td>커스텀 이벤트 기획</td><td>7월 진행 확정, 이미지 시안 검수 중</td><td class="r"><span class="pbar"><span style="width:90%"></span></span> 90%</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>꼴로르 메이커스 이벤트</td><td>공장 방문 일정·내용 확정, 지원서 제작 완료</td><td class="r"><span class="pbar"><span style="width:100%"></span></span> 100%</td><td><span class="chip done">완료</span></td></tr>
+        <tr><td>공장 방문 미팅 기획</td><td>상세 기획 준비 착수</td><td class="r"><span class="pbar"><span style="width:30%"></span></span> 30%</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>해외 인플루언서 협찬</td><td>알제리·영국 조율, 미국 소개서 준비</td><td class="r"><span class="pbar"><span style="width:80%"></span></span> 80%</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>존뮤어트레일(JMT) 협업</td><td>추가 촬영 확정, 계약서 준비·조율</td><td class="r"><span class="pbar"><span style="width:80%"></span></span> 80%</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>야외 촬영 인플루언서 조사</td><td>1차 조사 완료, 최종 후보 확정 단계</td><td class="r"><span class="pbar"><span style="width:70%"></span></span> 70%</td><td><span class="chip ing">진행 중</span></td></tr>
+        <tr><td>홈페이지 운영 모니터링</td><td>장바구니 이탈률·계절성 매출 점검</td><td class="r">상시</td><td><span class="chip mon">모니터링</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 10 -->
+  <section id="s10">
+    <h2><span class="num">10</span>AI 활용 업무 현황</h2>
+    <table>
+      <thead><tr><th>활용 업무</th><th>활용 방식</th><th style="width:80px">상태</th></tr></thead>
+      <tbody>
+        <tr><td>브랜드 필름 음악·나레이션 소스</td><td>AI 제작 후 외주 디자이너 전달</td><td><span class="chip done">완료</span></td></tr>
+        <tr><td>AI 영상 콘텐츠 제작 시안</td><td>미드저니·힉스필드·챗GPT 등 다툴 테스트 확인 완료, 의류 콘텐츠 제작 시도 예정</td><td><span class="chip done">완료</span></td></tr>
+        <tr><td>영상 편집 프로그램(캡컷) 활용</td><td>릴스 제작 시 캡컷 우선 활용 → 효율성 긍정적</td><td><span class="chip done">완료</span></td></tr>
+      </tbody>
+    </table>
+    <ul class="bul">
+      <li>AI 영상 콘텐츠 : 의류 콘텐츠 적합 툴 선별 단계, 해외 콘텐츠 제작 환경 신속 구축 목적 → 툴 최종 결정 후 본 제작 착수 예정</li>
+    </ul>
+  </section>
+
+  <!-- 11 -->
+  <section id="s11">
+    <h2><span class="num">11</span>이슈 및 특이사항</h2>
+    <ul class="bul">
+      <li><b>11-1. 콘텐츠 제작 일정 지연(외주 연동)</b> : 다수 제작물 동시 외주 일정 의존 → 구조적 병목으로 일부 지연 발생, 참고 요망. 조치 — 외주 발주 일정 사전 일괄 정리, 내부 직접 제작(AI·CANVA)과 외주 성격별 분리 운영</li>
+      <li><b>11-2. 야외 이미지 촬영 난항</b> : 야외 촬영 어려움이 업로드 수 감소 직접 원인. 조치 — 야외 촬영 외주 전환 위한 제작 가능자 조사 중, 7월부터 안정적 제작 흐름 구축 예정</li>
+      <li><b>11-3. 팔로워·매출 동반 둔화</b> : 재입고 입고 지연·5월 주력 에어라이트 400 판매 종료·타프 콘텐츠 부재 등 신규 자극 요소 부족. 조치 — 7월 재입고 물량·이벤트 피드 전환으로 회복 도모</li>
+    </ul>
+  </section>
+
+  <!-- 12 -->
+  <section id="s12">
+    <h2><span class="num">12</span>종합 평가</h2>
+    <ul class="bul">
+      <li>OOS 행사 이후, 단기 성과보다 브랜드 본질·하반기 핵심 프로젝트 토대 구축에 집중한 달</li>
+      <li>업로드 수·팔로워 순증(+63)·평균 전환율 모두 둔화 → 신제품 부재·재입고 지연·야외 촬영 난항 등 복합 작용</li>
+      <li>6월 매출 133,094,000원(전월 대비 -62.3%) — 신제품 부재·재입고 지연·5월 주력 에어라이트 400 판매 종료가 복합 작용</li>
+      <li>단, IG 유입 매출 하락폭(-19.2%)은 전체(-62.3%) 대비 작아 SNS 구매 영향력은 견고 유지</li>
+      <li>중장기 성장 자산 확보 : 브랜드 필름 공개, 90·프로190 릴스 제작, 커스텀 이벤트 7월 진행 확정, 해외 협찬 대상 확정</li>
+      <li>핵심 성과 : ① 다운라이너 90 릴스 외주 없이 자체 조회수·저장 1위 ② 씨씨레터 저널·스토리 3개월 연속 전환 자산 ③ 브랜드 필름 한·영 자막 해외 대응</li>
+      <li>보완 필요 : 외주 연동 제작 일정 지연, 야외 촬영 리소스 확보</li>
+      <li><b>7월 핵심 과제</b> : 재입고 콘텐츠로 0.2% 이상 성장 기여 구간 진입 및 매출 회복, 꼴로르 메이커스 UL 본격 진행, 해외 협찬 콘텐츠 제작, JMT 추가 촬영 실행, 의류 마케팅 본격 준비</li>
+    </ul>
+  </section>
+
+  <!-- 13 / 7월 계획 -->
+  <section id="s13" class="plan">
+    <h2><span class="num">13</span>7월 주요 예정 업무 계획서</h2>
+    <div style="font-size:13px; opacity:.85; margin-bottom:10px;">2026.07 월간 업무 계획서 · 마케팅팀 이상희 · ※ 6월 5주차(6/29~30) 업무 포함</div>
+    <h3 class="sub" style="color:#cdeee9">1. 7월 운영 방향</h3>
+    <ul class="bul">
+      <li>6월 = 브랜드 자산 구축·기획 정비 / <b>7월 = 확보 자산의 성과 전환 실행기</b></li>
+      <li>핵심 축 : ① 재입고 콘텐츠로 팔로워·전환·매출 회복 ② 커스텀 이벤트 본격 실행 ③ 해외 콘텐츠 흐름 구체화 ④ 하반기 의류 마케팅 착수</li>
+    </ul>
+    <h3 class="sub" style="color:#cdeee9">2. 주요 예정 업무</h3>
+    <table>
+      <thead><tr><th>구분</th><th>업무명</th><th>세부 내용</th></tr></thead>
+      <tbody>
+        <tr><td>대외 협업</td><td>JMT 협업 구체화</td><td>콘텐츠 준비 및 레퍼런스 시안 준비 → 협업 구체화, 추가 촬영 이미지 기반 재제작 반영</td></tr>
+        <tr><td>이벤트</td><td>꼴로르 메이커스 UL 2026 상세 준비</td><td>공장 방문 미팅 상세 기획, 운영·참여자 동선 확정, 이벤트 피드(6/29) 성과 분석</td></tr>
+        <tr><td>콘텐츠</td><td>7월 재입고 제품 콘텐츠 준비</td><td>재입고 안내 콘텐츠 기획, 0.2% 이상 성장 기여 구간 진입 및 매출 회복 목표</td></tr>
+        <tr><td>해외</td><td>해외 인플루언서 협업 진행</td><td>알제리·영국 협찬 콘텐츠 제작, 미국 소개서 제안·확정</td></tr>
+        <tr><td>신규</td><td>의류 마케팅 본격 준비</td><td>온·오프라인 이벤트 및 콘텐츠 기획 착수</td></tr>
+        <tr><td>일정</td><td>하반기 제품 콘텐츠 상세 일정 준비</td><td>하반기 라인업 기준 콘텐츠 발행 일정 수립</td></tr>
+        <tr><td>홈페이지</td><td>콘텐츠 활성화 이미지 준비</td><td>활성화용 이미지 확보, 야외 촬영 외주 작업 진행</td></tr>
+      </tbody>
+    </table>
+    <h3 class="sub" style="color:#cdeee9">3. 세부 계획</h3>
+    <ul class="bul">
+      <li><b>JMT</b> : 신규 이미지 자산 활용 콘텐츠 준비, 레퍼런스 시안 사전 마련해 협업 방향 구체화 / 계약·요청사항 조율 마무리 후 본 제작 연결</li>
+      <li><b>꼴로르 메이커스 UL</b> : 6/29 이벤트 피드 성과 분석, 공장 방문 미팅 상세 기획 완성, 참가자 본사 방문 일정·동선 확정 후 본격 가동</li>
+      <li><b>재입고 콘텐츠</b> : 입고 시점 맞춰 안내 콘텐츠 선제 준비, 5~6월 연속 전환율·매출 하락 차단 및 0.2% 이상 구간 진입 목표</li>
+      <li><b>해외 인플루언서</b> : 알제리·영국 협찬 콘텐츠 제작 실행, 미국 브랜드 소개서 제안 마무리, 협찬 이미지+리그램 데이터 결합</li>
+      <li><b>의류 마케팅</b> : 하반기 신규 영역 본격 준비, 온·오프라인 이벤트+콘텐츠 기획 병행 설계</li>
+      <li><b>하반기 제품 콘텐츠 일정</b> : 하반기 라인업 기준 발행 상세 일정 수립 → 6월식 콘텐츠 공백 사전 방지</li>
+      <li><b>홈페이지 콘텐츠 활성화</b> : 야외 촬영 외주 전환으로 6월 촬영 난항 해소, 활성화용 이미지 안정 확보</li>
+    </ul>
+  </section>
+
+  <footer>2026.06 월간 업무 보고서 · 마케팅팀 이상희 · 본 페이지는 보고서 데이터 기반 자동 시각화</footer>
+</div>
+
+<script>
+Chart.defaults.font.family = "'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+Chart.defaults.color = '#5b6472';
+const fmt = v => v.toLocaleString('ko-KR');
+
+// 2-2 콘텐츠 성과
+new Chart(document.getElementById('chartContent'), {
+  data:{
+    labels:['브랜드 필름\n(6/4)','썸머라이트 500\n(6/11)','다운라이너 90\n(6/17)'],
+    datasets:[
+      {type:'bar', label:'조회수', data:[5959,6812,7509], backgroundColor:'#2f6df0', yAxisID:'y', borderRadius:4},
+      {type:'bar', label:'도달', data:[3795,4003,3982], backgroundColor:'#a9c2f7', yAxisID:'y', borderRadius:4},
+      {type:'line', label:'저장', data:[1,2,11], borderColor:'#e0524d', backgroundColor:'#e0524d', yAxisID:'y1', tension:.3, pointRadius:5, borderWidth:2}
+    ]
+  },
+  options:{responsive:true, maintainAspectRatio:false,
+    scales:{
+      y:{position:'left', title:{display:true,text:'조회수·도달'}, ticks:{callback:fmt}},
+      y1:{position:'right', title:{display:true,text:'저장'}, grid:{drawOnChartArea:false}, beginAtZero:true}
+    },
+    plugins:{legend:{position:'bottom'}}
+  }
+});
+
+// 2-3 씨씨레터 클릭률 추이
+new Chart(document.getElementById('chartCC'), {
+  type:'line',
+  data:{
+    labels:['4월','5월','6월'],
+    datasets:[{label:'씨씨레터 링크 클릭률(%)', data:[2.51,9.89,4.61],
+      borderColor:'#15b8a6', backgroundColor:'rgba(21,184,166,.12)', fill:true, tension:.3,
+      pointRadius:6, pointBackgroundColor:'#15b8a6', borderWidth:3}]
+  },
+  options:{responsive:true, maintainAspectRatio:false,
+    scales:{y:{beginAtZero:true, ticks:{callback:v=>v+'%'}}},
+    plugins:{legend:{position:'bottom'}}
+  }
+});
+
+// 8-1 매출액
+new Chart(document.getElementById('chartSales'), {
+  type:'bar',
+  data:{
+    labels:['5월','6월(6/26)'],
+    datasets:[{label:'총 매출액(백만 원)', data:[352.6,133.1],
+      backgroundColor:['#2f6df0','#e0524d'], borderRadius:6, barThickness:70}]
+  },
+  options:{responsive:true, maintainAspectRatio:false,
+    scales:{y:{beginAtZero:true, ticks:{callback:v=>v+'M'}}},
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.parsed.y+'백만 원'}}}
+  }
+});
+
+// 8-1 전환율·객단가
+new Chart(document.getElementById('chartMetrics'), {
+  data:{
+    labels:['5월','6월'],
+    datasets:[
+      {type:'bar', label:'객단가(원)', data:[331715,271067], backgroundColor:'#a9c2f7', yAxisID:'y', borderRadius:5},
+      {type:'line', label:'구매 전환율(%)', data:[2.2,1.6], borderColor:'#e0524d', backgroundColor:'#e0524d', yAxisID:'y1', tension:.3, pointRadius:6, borderWidth:3}
+    ]
+  },
+  options:{responsive:true, maintainAspectRatio:false,
+    scales:{
+      y:{position:'left', title:{display:true,text:'객단가'}, ticks:{callback:fmt}},
+      y1:{position:'right', title:{display:true,text:'전환율(%)'}, grid:{drawOnChartArea:false}, beginAtZero:true, ticks:{callback:v=>v+'%'}}
+    },
+    plugins:{legend:{position:'bottom'}}
+  }
+});
+
+// 8-3 IG 유입
+new Chart(document.getElementById('chartIG'), {
+  type:'bar',
+  data:{
+    labels:['유입 매출(원)','유입수(회)'],
+    datasets:[
+      {label:'5월', data:[1495000,1133], backgroundColor:'#2f6df0', borderRadius:5},
+      {label:'6월', data:[1208000,807], backgroundColor:'#15b8a6', borderRadius:5}
+    ]
+  },
+  options:{responsive:true, maintainAspectRatio:false,
+    scales:{y:{type:'logarithmic', title:{display:true,text:'로그 스케일'}, ticks:{callback:fmt}}},
+    plugins:{legend:{position:'bottom'},
+      tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}}
+  }
+});
+</script>
+</body>
+</html>
